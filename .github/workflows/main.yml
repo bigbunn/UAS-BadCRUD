@@ -12,10 +12,8 @@ jobs:
       mysql:
         image: mysql:latest
         env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: mydatabase
-          MYSQL_USER: root
-          MYSQL_PASSWORD: 
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: badcrud
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -64,7 +62,7 @@ jobs:
         with:
           name: Screenshot
           path: screenshot.png
-        
+
       - name: stop docker
         run: docker stop docker-apache
 
