@@ -10,7 +10,7 @@ class LoginTestCase(unittest.TestCase):
         # option.add_argument('--headless')
         # self.browser = webdriver.Firefox(options=option)
         
-        options = webdriver.Edge()
+        options = webdriver.FirefoxOptions()
         options.add_argument('--ignore-ssl-errors=yes')
         options.add_argument('--ignore-certificate-errors')
         server = 'http://localhost:4444'
