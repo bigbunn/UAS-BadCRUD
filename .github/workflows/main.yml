@@ -20,7 +20,7 @@ jobs:
         run: docker build -t my-php-site:latest .
 
       - name: Docker compose
-        run: docker-compose up -d
+        run: docker-compose up  -d
 
       - name: Get AUT URL
         run: |
@@ -41,6 +41,9 @@ jobs:
 
       - name: Install Selenium client
         run: pip install -U selenium pytest pytest-xdist
+
+      - Scaling firefox:
+        run : docker compose up --scale firefox =5
 
       - name: Run tests using pytest
         run: |
