@@ -10,7 +10,13 @@ class LoginTestCase(unittest.TestCase):
         # option.add_argument('--headless')
         # self.browser = webdriver.Firefox(options=option)
         
-        self.browser = webdriver.Edge()
+        options = webdriver.Edge()
+        options.add_argument('--ignore-ssl-errors=yes')
+        options.add_argument('--ignore-certificate-errors')
+        server = 'http://localhost:4444'
+
+        self.browser = webdriver.Remote(command_executor=server,options=options)
+        self.addCleanup(self.browser.quit)
         # extension_path = "D:/adblocker.xpi"
         # self.browser.install_addon(extension_path)
         # self.addCleanup(self.browser.quit)
@@ -54,4 +60,4 @@ class LoginTestCase(unittest.TestCase):
         self.browser.quit()
 
 if __name__ == '__main__':
-    unittest.main(verbosity=2,warnings='ignore') 
+    unittest.main(argv=['first-arg-is-ignored'],verbosity=2,warnings='ignore') 
