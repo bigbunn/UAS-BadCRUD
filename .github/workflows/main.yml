@@ -43,7 +43,7 @@ jobs:
         run: pip install -U selenium pytest pytest-xdist
 
       - name: Run test
-        run: python tests/logintest.py ${{ env.URL }}
+        run: python tests/logintest.py 
         
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v4
