@@ -5,13 +5,11 @@ services:
     container_name: docker-apache
     ports:
       - "80:80"
-    networks:
-      - isolated
   mysql:
     image: mysql:latest
     container_name: mysql-container
     environment:
-      MYSQL_ROOT_PASSWORD: mysqlpassword
+      MYSQL_ROOT_PASSWORD: 
       MYSQL_DATABASE: badcrud
     ports:
       - "3306:3306"
