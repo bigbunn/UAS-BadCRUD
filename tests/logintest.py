@@ -1,4 +1,7 @@
 import unittest
+import os
+import random
+import string
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
@@ -17,13 +20,21 @@ class LoginTestCase(unittest.TestCase):
         server = 'http://localhost:4444'
 
         self.browser = webdriver.Remote(command_executor=server,options=options)
+
+        try:
+            self.url = os.environ['URL']
+        except:
+            self.url = "http://localhost"
+        
+        self.name_query = ''.join(random.choices(string.ascii_letters, k=10))
+
         # self.addCleanup(self.browser.quit)
         # extension_path = "D:/adblocker.xpi"
         # self.browser.install_addon(extension_path)
         # self.addCleanup(self.browser.quit)
 
     def test_1_login_page_check(self):
-        self.browser.get('http://localhost/BadCRUD/login.php')
+        self.browser.get(self.url + '/login.php')
         expected_result = "Login"        
         actual_result = self.browser.title
         self.assertIn(expected_result, actual_result)
