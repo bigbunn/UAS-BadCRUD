@@ -8,31 +8,20 @@ jobs:
     name: Pytest
     permissions: write-all
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:latest
-        env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_DATABASE: badcrud
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
-      - name: Create and Import MySQL Database
-        run: |
-          mysql -h 127.0.0.1 -u root badcrud < db/badcrud.sql
-
       - name: Checkout the repo
         uses: actions/checkout@v4
 
-      - name: Create isolated network
-        run: docker network create --driver bridge isolated
+      - name: Docker compose
+        run: docker-compose up -d
+      # - name: Create isolated network
+      #   run: docker network create --driver bridge isolated
 
-      - name: Deploy AUT
-        run: docker build -t my-php-site:latest .
+      # - name: Deploy AUT
+      #   run: docker build -t my-php-site:latest .
 
-      - name: Run AUT
-        run: docker run --network=isolated -p 80:80 --name docker-apache -t -d my-php-site:latest
+      # - name: Run AUT
+      #   run: docker run --network=isolated -p 80:80 --name docker-apache -t -d my-php-site:latest
 
       - name: Get AUT URL
         run: |
@@ -42,14 +31,14 @@ jobs:
       - name: Check AUT URL
         run: curl ${{ env.URL }}
 
-      - name: Selenium Preparation
-        run: docker run --network=isolated -d -p 4444:4444 -p 7900:7900 -v /dev/shm:/dev/shm --name firefox-standalone selenium/standalone-firefox:latest
+      # - name: Selenium Preparation
+      #   run: docker run --network=isolated -d -p 4444:4444 -p 7900:7900 -v /dev/shm:/dev/shm --name firefox-standalone selenium/standalone-firefox:latest
 
-      - name: Wait for Selenium Hub
-        run: sh wait.sh
+      # - name: Wait for Selenium Hub
+      #   run: sh wait.sh
 
-      - name: Check the Hub
-        run: curl http://localhost:4444/ui
+      # - name: Check the Hub
+      #   run: curl http://localhost:4444/ui
 
       - name: Install Selenium client
         run: pip install -U selenium

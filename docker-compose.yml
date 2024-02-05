@@ -1,0 +1,68 @@
+version: '3.8'
+services:
+  my-php-site:
+    image: my-php-site:latest
+    container_name: docker-apache
+    ports:
+      - "80:80"
+    networks:
+      - isolated
+  php-apache-environment:
+      container_name: php-apache
+      build:
+          context: ./docker
+          dockerfile: Dockerfile
+      depends_on:
+        db:
+          condition: service_healthy
+      volumes:
+          - .:/var/www/html/
+      networks:
+        - isolated
+      ports:
+          - 8000:80
+  db:
+      container_name: db
+      image: mysql
+      restart: unless-stopped
+      environment:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: badcrud
+      volumes:
+      - db/badcrud.sql
+      networks:
+        - isolated
+      ports:
+          - "9906:3306"
+      healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+        - '8080:80'
+    expose:
+      - 8080
+    restart: always
+    environment:
+        PMA_HOST: db
+    depends_on:
+        db:
+          condition: service_healthy
+    networks:
+      - isolated
+  selenium:
+    image: selenium/standalone-firefox:latest
+    ports:
+      - "4444:4444"
+      - "7900:7900"
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - isolated
+    
+networks:
+  isolated:
+    driver: bridge
