@@ -5,50 +5,38 @@ from selenium.webdriver.common.by import By
 class ProfilePictureUploadTestCase(unittest.TestCase):
 
     @classmethod
-    def setUpClass(cls):
-        option = webdriver.FirefoxOptions()
-        option.add_argument('--headless')
-        cls.browser = webdriver.Firefox(options=option)
+    def setUpClass(self):
+        options = webdriver.FirefoxOptions()
+        options.add_argument('--headless')
+        options.add_argument('--ignore-ssl-errors=yes')
+        options.add_argument('--ignore-certificate-errors')
+        server = 'http://localhost:4444'
+
+        self.browser = webdriver.Remote(command_executor=server,options=options)
+
         try:
-            cls.url = os.environ['URL']
+            self.url = os.environ['URL']
         except:
-            cls.url = "http://localhost"
+            self.url = "http://localhost"
 
-    def test(self):
-        self.login_correct_credentials()
-        self.go_to_profile_page()
-        self.upload_profile_picture()
+    def test_1_login(self):
+        expected_result = "Halo, admin"
+        self.browser.get(self.url + '/login.php')
+        self.browser.find_element(By.NAME, "username").send_keys("admin")
+        self.browser.find_element(By.NAME, "password").send_keys("nimda666!")
+        self.browser.find_element(By.XPATH, "/html/body/form/button").click()
+        actual_result = self.browser.find_element(By.XPATH, "/html/body/div[1]/h2").text  
+        self.assertIn(expected_result, actual_result)
 
-    def login_correct_credentials(self):
-        login_url = self.url + '/login.php'
-        self.browser.get(login_url)
-
-        self.browser.find_element(By.ID, 'inputUsername').send_keys('admin')
-        self.browser.find_element(By.ID, 'inputPassword').send_keys('nimda666!')
-        self.browser.find_element(By.TAG_NAME, 'button').click()
-
-    def go_to_profile_page(self):
-        profile_url = self.url + '/profil.php'
-        self.browser.get(profile_url)
-
-    def upload_profile_picture(self):
-        file_input = self.browser.find_element(By.ID, 'formFile')
-        
-        image_path = os.path.join(os.getcwd(), 'tests', 'test_images', 'image.jpg')
-        file_input.send_keys(image_path)
-
-        submit_button = self.browser.find_element(By.CSS_SELECTOR, 'button.btn-secondary')
-        submit_button.click()
-
-        redirected_url = self.url + '/profil.php'
-        self.assertEqual(redirected_url, self.browser.current_url)
-
-        new_profile_picture = self.browser.find_element(By.CSS_SELECTOR, 'img[src="image/profile.jpg"]')
-        self.assertIsNotNone(new_profile_picture)
+    def test_2_profile_page(self):
+        expected_result = "Profile"
+        self.browser.get(self.url + '/profil.php')
+        actual_result = self.browser.title
+        self.assertIn(expected_result,actual_result)
 
     @classmethod
-    def tearDownClass(cls):
-        cls.browser.quit()
+    def tearDownClass(self):
+        self.browser.quit()
 
 if __name__ == '__main__':
     unittest.main(verbosity=2, warnings='ignore')

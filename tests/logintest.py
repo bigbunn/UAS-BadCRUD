@@ -26,7 +26,6 @@ class LoginTestCase(unittest.TestCase):
         except:
             self.url = "http://localhost"
         
-        self.name_query = ''.join(random.choices(string.ascii_letters, k=10))
 
         # self.addCleanup(self.browser.quit)
         # extension_path = "D:/adblocker.xpi"

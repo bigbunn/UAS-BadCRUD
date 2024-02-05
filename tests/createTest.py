@@ -10,69 +10,63 @@ from selenium.webdriver.common.keys import Keys
 class CreateContactTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        option = webdriver.FirefoxOptions()
-        option.add_argument('--headless')
-        self.browser = webdriver.Firefox(options=option)
+        options = webdriver.FirefoxOptions()
+        options.add_argument('--headless')
+        options.add_argument('--ignore-ssl-errors=yes')
+        options.add_argument('--ignore-certificate-errors')
+        server = 'http://localhost:4444'
+
+        self.browser = webdriver.Remote(command_executor=server,options=options)
+
         try:
             self.url = os.environ['URL']
         except:
             self.url = "http://localhost"
-        self.name_query = ''.join(random.choices(string.ascii_letters, k=10))
 
-    def test(self):
-        self.login_correct_credentials()
-        self.create_contact()
-        self.search_contact()
-        self.delete_contact()
+    def test_1_login(self):
+        expected_result = "Halo, admin"
+        self.browser.get(self.url + '/login.php')
+        self.browser.find_element(By.NAME, "username").send_keys("admin")
+        self.browser.find_element(By.NAME, "password").send_keys("nimda666!")
+        self.browser.find_element(By.XPATH, "/html/body/form/button").click()
+        actual_result = self.browser.find_element(By.XPATH, "/html/body/div[1]/h2").text  
+        self.assertIn(expected_result, actual_result)
 
-    def login_correct_credentials(self):
-        login_url = self.url + '/login.php'
-        self.browser.get(login_url)
-
-        self.browser.find_element(By.ID, 'inputUsername').send_keys('admin')
-        self.browser.find_element(By.ID, 'inputPassword').send_keys('nimda666!')
-        self.browser.find_element(By.TAG_NAME, 'button').click()
-
-    def create_contact(self):
-        create_url = self.url + '/create.php'
-        self.browser.get(create_url)
-
-        self.browser.find_element(By.ID, 'name').send_keys(self.name_query)
-        self.browser.find_element(By.ID, 'email').send_keys('test@example.com')
-        self.browser.find_element(By.ID, 'phone').send_keys('1234567890')
-        self.browser.find_element(By.ID, 'title').send_keys('Developer')
+    def test_2_create_contact(self):
+        
+        self.browser.get(self.url + '/create.php')
+        self.browser.find_element(By.ID, 'name').send_keys('Bani')
+        self.browser.find_element(By.ID, 'email').send_keys('bani@example.com')
+        self.browser.find_element(By.ID, 'phone').send_keys('088811112222')
+        self.browser.find_element(By.ID, 'title').send_keys('Orang Bengkel')
 
         self.browser.find_element(By.CSS_SELECTOR, 'input[type="submit"]').click()
 
-        index_page_title = "Dashboard"
+        expected_result = "Dashboard"
         actual_title = self.browser.title
-        self.assertEqual(index_page_title, actual_title)
+        self.assertEqual(expected_result, actual_title)
 
-    def search_contact(self):
-        search_query = self.name_query
-        self.browser.find_element(By.ID, 'employee_filter').find_element(By.TAG_NAME, 'input').send_keys(search_query)
+    def test_3_search_contact(self):
+        
+        self.browser.find_element(By.ID, 'employee_filter').find_element(By.TAG_NAME, 'input').send_keys('bani')
         self.browser.find_element(By.ID, 'employee_filter').find_element(By.TAG_NAME, 'input').send_keys(Keys.ENTER)
 
-        searched_contact_name = self.name_query
-        searched_contact_exists = self.browser.find_elements(By.XPATH, f"//td[contains(text(), '{searched_contact_name}')]")
-        self.assertTrue(searched_contact_exists)
+        expected_result='bani'
+        is_contact_exists = self.browser.find_elements(By.XPATH, f"//td[contains(text(), '{expected_result}')]")
+        self.assertTrue(is_contact_exists)
 
-    def delete_contact(self):
-        actions_section = self.browser.find_element(By.XPATH, "//tr[@role='row'][1]//td[contains(@class, 'actions')]")
-        delete_button = actions_section.find_element(By.XPATH, ".//a[contains(@class, 'btn-danger')]")
-
-        delete_button.click()
+    def test_4_delete_contact(self):
+        actions = self.browser.find_element(By.XPATH, "//tr[@role='row'][1]//td[contains(@class, 'actions')]")
+        actions.find_element(By.XPATH, ".//a[contains(@class, 'btn-danger')]").click()
 
         self.browser.switch_to.alert.accept()
         time.sleep(3)
 
-        search_query = self.name_query
-        self.browser.find_element(By.ID, 'employee_filter').find_element(By.TAG_NAME, 'input').send_keys(search_query)
+        self.browser.find_element(By.ID, 'employee_filter').find_element(By.TAG_NAME, 'input').send_keys('bani')
         self.browser.find_element(By.ID, 'employee_filter').find_element(By.TAG_NAME, 'input').send_keys(Keys.ENTER)
 
-        searched_contact_name = self.name_query
-        searched_contact_exists = self.browser.find_elements(By.XPATH, f"//td[contains(text(), '{searched_contact_name}')]")
-        self.assertFalse(searched_contact_exists)
+        is_contact_exists = self.browser.find_elements(By.XPATH, f"//td[contains(text(), '{'bani'}')]")
+        self.assertFalse(is_contact_exists)
 
     @classmethod
     def tearDownClass(self):
