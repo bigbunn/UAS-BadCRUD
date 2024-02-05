@@ -11,12 +11,13 @@ class LoginTestCase(unittest.TestCase):
         # self.browser = webdriver.Firefox(options=option)
         
         options = webdriver.FirefoxOptions()
+        options.add_argument('--headless')
         options.add_argument('--ignore-ssl-errors=yes')
         options.add_argument('--ignore-certificate-errors')
         server = 'http://localhost:4444'
 
         self.browser = webdriver.Remote(command_executor=server,options=options)
-        self.addCleanup(self.browser.quit)
+        # self.addCleanup(self.browser.quit)
         # extension_path = "D:/adblocker.xpi"
         # self.browser.install_addon(extension_path)
         # self.addCleanup(self.browser.quit)
