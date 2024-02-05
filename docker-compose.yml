@@ -26,8 +26,10 @@ services:
       image: mysql
       restart: unless-stopped
       environment:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_DATABASE: badcrud
+          MYSQL_ROOT_PASSWORD: ""
+      MYSQL_DATABASE: badcrud
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: ""
       volumes:
       - db/badcrud.sql
       networks:
