@@ -39,7 +39,7 @@ class LoginTestCase(unittest.TestCase):
         actual_result = self.browser.title
         self.assertIn(expected_result, actual_result)
 
-    def connect_database(self):
+    def test_connect_database(self):
         expected_result="Failed to connect to database!"
         self.browser.find_element(By.NAME, "username").send_keys("admin")
         self.browser.find_element(By.NAME, "password").send_keys("nimda666!")
@@ -47,7 +47,8 @@ class LoginTestCase(unittest.TestCase):
         actual_result=self.browser.find_element(By.XPATH,'/html/body').text
         self.assertIn(expected_result, actual_result)
 
-    def test_2_login_check(self):           
+    def test_2_login_check(self):
+        self.browser.get(self.url + '/login.php')           
         expected_result = "Halo, admin"
         self.browser.find_element(By.NAME, "username").send_keys("admin")
         self.browser.find_element(By.NAME, "password").send_keys("nimda666!")
