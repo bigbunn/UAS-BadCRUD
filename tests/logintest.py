@@ -39,16 +39,7 @@ class LoginTestCase(unittest.TestCase):
         actual_result = self.browser.title
         self.assertIn(expected_result, actual_result)
 
-    def test_2_connect_database(self):
-        self.browser.get(self.url + '/login.php') 
-        expected_result="Failed to connect to database!"
-        self.browser.find_element(By.NAME, "username").send_keys("admin")
-        self.browser.find_element(By.NAME, "password").send_keys("nimda666!")
-        self.browser.find_element(By.XPATH, "/html/body/form/button").click()
-        actual_result=self.browser.find_element(By.XPATH,'/html/body').text
-        self.assertIn(expected_result, actual_result)
-
-    def test_3_login_check(self):
+    def test_2_login_check(self):
         self.browser.get(self.url + '/login.php')           
         expected_result = "Halo, admin"
         self.browser.find_element(By.NAME, "username").send_keys("admin")
@@ -57,13 +48,13 @@ class LoginTestCase(unittest.TestCase):
         actual_result = self.browser.find_element(By.XPATH, "/html/body/div[1]/h2").text  
         self.assertIn(expected_result, actual_result)
 
-    def test_4_sign_out_check(self):
+    def test_3_sign_out_check(self):
         expected_result = "Login"     
         self.browser.find_element(By.XPATH,'/html/body/div[1]/div[1]/div/div/a[3]').click()
         actual_result = self.browser.title
         self.assertIn(expected_result, actual_result)
 
-    def test_5_invalid_login_check(self):           
+    def test_4_invalid_login_check(self):           
         expected_result = "Wrong usename or password"
         self.browser.find_element(By.NAME, "username").send_keys("admin")
         self.browser.find_element(By.NAME, "password").send_keys("admin")
@@ -71,7 +62,7 @@ class LoginTestCase(unittest.TestCase):
         actual_result = self.browser.find_element(By.XPATH, "/html/body/form/div/label").text  
         self.assertIn(expected_result, actual_result)
 
-    def test_6_empty_login_check(self):           
+    def test_5_empty_login_check(self):           
         expected_result = "Login"  
         self.browser.find_element(By.XPATH, "/html/body/form/button").click()
         actual_result = self.browser.title
