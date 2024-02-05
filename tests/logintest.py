@@ -39,6 +39,14 @@ class LoginTestCase(unittest.TestCase):
         actual_result = self.browser.title
         self.assertIn(expected_result, actual_result)
 
+    def connect_database(self):
+        expected_result="Failed to connect to database!"
+        self.browser.find_element(By.NAME, "username").send_keys("admin")
+        self.browser.find_element(By.NAME, "password").send_keys("nimda666!")
+        self.browser.find_element(By.XPATH, "/html/body/form/button").click()
+        actual_result=self.browser.find_element(By.XPATH,'/html/body').text
+        self.assertIn(expected_result, actual_result)
+
     def test_2_login_check(self):           
         expected_result = "Halo, admin"
         self.browser.find_element(By.NAME, "username").send_keys("admin")
