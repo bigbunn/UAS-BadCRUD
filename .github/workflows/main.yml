@@ -12,16 +12,15 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v4
 
+      
+      - name: Create isolated network
+        run: docker network create --driver bridge isolated
+
+      - name: Deploy AUT
+        run: docker build -t my-php-site:latest .
+
       - name: Docker compose
         run: docker-compose up -d
-      # - name: Create isolated network
-      #   run: docker network create --driver bridge isolated
-
-      # - name: Deploy AUT
-      #   run: docker build -t my-php-site:latest .
-
-      # - name: Run AUT
-      #   run: docker run --network=isolated -p 80:80 --name docker-apache -t -d my-php-site:latest
 
       - name: Get AUT URL
         run: |
@@ -31,17 +30,17 @@ jobs:
       - name: Check AUT URL
         run: curl ${{ env.URL }}
 
-      # - name: Selenium Preparation
-      #   run: docker run --network=isolated -d -p 4444:4444 -p 7900:7900 -v /dev/shm:/dev/shm --name firefox-standalone selenium/standalone-firefox:latest
+      - name: Selenium Preparation
+        run: docker run --network=isolated -d -p 4444:4444 -p 7900:7900 -v /dev/shm:/dev/shm --name firefox-standalone selenium/standalone-firefox:latest
 
-      # - name: Wait for Selenium Hub
-      #   run: sh wait.sh
+      - name: Wait for Selenium Hub
+        run: sh wait.sh
 
-      # - name: Check the Hub
-      #   run: curl http://localhost:4444/ui
+      - name: Check the Hub
+        run: curl http://localhost:4444/ui
 
       - name: Install Selenium client
-        run: pip install -U selenium
+        run: pip install -U selenium pytest pytest-xdist
 
       - name: Run test
         run: python tests/logintest.py ${{ env.URL }}
