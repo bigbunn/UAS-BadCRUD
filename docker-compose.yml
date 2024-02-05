@@ -14,4 +14,4 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - /db/badcrud.sql:/docker-entrypoint-initdb.d/badcrud.sql:ro
+      - ./db/badcrud.sql:/docker-entrypoint-initdb.d/badcrud.sql:ro
