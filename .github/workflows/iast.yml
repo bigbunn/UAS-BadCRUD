@@ -29,6 +29,15 @@ jobs:
       - name: Check AUT URL
         run: curl ${{ env.URL }}
 
+      - name: ICTU ZAP2Docker
+        run: docker run --rm -v $(pwd):/zap/wrk/:rw -t ictu/zap2docker-weekly zap-baseline.py -I -j \
+          -t ${{ env.URL }} \
+          -r testreport.html \
+          --hook=/zap/auth_hook.py \
+          -z "auth.loginurl=${{ env.URL }}/login.php \
+              auth.username="admin" \
+              auth.password="nimda666!""
+
       - name: CURL to follow redirection
         id: target_url  ## in my case : target has SAML service for auth, thus the login url is on difference page
         run: |
@@ -40,6 +49,7 @@ jobs:
         uses: hermanka/action-full-scan@master
         with:
           target : ${{ env.URL}}
+          docker_name: 'ictu/zap2docker-weekly'
           network_name: isolated
           token : ${{ secrets.GITHUB_TOKEN }}
           cmd_options: |
