@@ -1,0 +1,76 @@
+name: IAST
+on:
+  push:
+    branches:
+      - main
+jobs:
+  dast:
+    name: DAST
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+
+      - name: Create isolated network
+        run: docker network create --driver bridge isolated
+
+      - name: Deploy AUT
+        run: docker build -t my-php-site:latest .
+
+      - name: Run AUT
+        run: docker-compose up -d
+
+      - name: Get AUT URL
+        run: |
+          URL=http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1)
+          echo "URL=$URL" >> $GITHUB_ENV
+
+      - name: Check AUT URL
+        run: curl ${{ env.URL }}
+
+      - name: ZAP scan
+        uses: hermanka/action-full-scan@master
+        with:
+          target : ${{ env.URL}}
+          network_name: isolated
+          http_login_form : '/login.php'
+          http_login_http_username : admin
+          htpp_login_http_password: nimda666!
+      
+      - name: stop docker
+        run: docker stop docker-apache
+  
+  sast:
+    name: Psalm
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Psalm Security Scan
+        uses: docker://ghcr.io/psalm/psalm-security-scan
+
+      - name: Import Security Analysis Results into Github Security Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+  
+  sast2:
+    name: SonarQube
+    permissions: write-all
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with: 
+          fetch-depth: 0
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  
