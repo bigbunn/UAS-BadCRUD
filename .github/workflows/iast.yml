@@ -44,7 +44,7 @@ jobs:
           network_name: isolated
           token : ${{ secrets.GITHUB_TOKEN }}
           cmd_options: |
-            -z "auth.loginurl=${{env.URL}/login"
+            -z "auth.loginurl=${{env.URL}}/login"
             auth.username='admin' 
             auth.password='nimda666!'
             auth.username_field=username 
