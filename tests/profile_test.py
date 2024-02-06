@@ -19,7 +19,7 @@ class ProfilePictureUploadTestCase(unittest.TestCase):
         except:
             self.url = "http://localhost"
 
-    def test_1_login(self):
+    def test_profile_page(self):
         expected_result = "Halo, admin"
         self.browser.get(self.url + '/login.php')
         self.browser.find_element(By.NAME, "username").send_keys("admin")
@@ -28,7 +28,7 @@ class ProfilePictureUploadTestCase(unittest.TestCase):
         actual_result = self.browser.find_element(By.XPATH, "/html/body/div[1]/h2").text  
         self.assertIn(expected_result, actual_result)
 
-    def test_2_profile_page(self):
+    # def test_2_profile_page(self):
         expected_result = "Profile"
         self.browser.get(self.url + '/profil.php')
         actual_result = self.browser.title

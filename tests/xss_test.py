@@ -19,7 +19,7 @@ class XSSDetectionTestCase(unittest.TestCase):
         except:
             self.url = "http://localhost"  
             
-    def test_1_login(self):
+    def test_xss(self):
         expected_result = "Halo, admin"
         self.browser.get(self.url + '/login.php')
         self.browser.find_element(By.NAME, "username").send_keys("admin")
@@ -28,7 +28,7 @@ class XSSDetectionTestCase(unittest.TestCase):
         actual_result = self.browser.find_element(By.XPATH, "/html/body/div[1]/h2").text  
         self.assertIn(expected_result, actual_result)
 
-    def test_2_xss_page(self):
+    # def test_2_xss_page(self):
         self.browser.get(self.url + '/xss.php')
 
         input_field = self.browser.find_element(By.NAME, 'thing')

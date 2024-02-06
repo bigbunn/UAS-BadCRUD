@@ -24,7 +24,7 @@ class UpdateContactTestCase(unittest.TestCase):
         except:
             self.url = "http://localhost"    
 
-    def test_1_login(self):
+    def test_update_contact(self):
         expected_result = "Halo, admin"
         self.browser.get(self.url + '/login.php')
         self.browser.find_element(By.NAME, "username").send_keys("admin")
@@ -33,7 +33,7 @@ class UpdateContactTestCase(unittest.TestCase):
         actual_result = self.browser.find_element(By.XPATH, "/html/body/div[1]/h2").text  
         self.assertIn(expected_result, actual_result)
 
-    def test_2_create_contact(self):
+    # def test_2_create_contact(self):
         self.browser.get(self.url + '/create.php')
         self.browser.find_element(By.ID, 'name').send_keys('bani')
         self.browser.find_element(By.ID, 'email').send_keys('bani@example.com')
@@ -46,7 +46,7 @@ class UpdateContactTestCase(unittest.TestCase):
         actual_title = self.browser.title
         self.assertEqual(expected_result, actual_title)
 
-    def test_3_update_contact(self):
+    # def test_3_update_contact(self):
         self.browser.find_element(By.ID, 'employee_filter').find_element(By.TAG_NAME, 'input').send_keys('bani')
         self.browser.find_element(By.ID, 'employee_filter').find_element(By.TAG_NAME, 'input').send_keys(Keys.ENTER)
 
@@ -71,7 +71,7 @@ class UpdateContactTestCase(unittest.TestCase):
         is_contact_updated = self.browser.find_elements(By.XPATH, f"//td[contains(text(), '{'Udah bukan orang bengkel'}')]")
         self.assertTrue(is_contact_updated)
 
-    def test_4_delete_contact(self):
+    # def test_4_delete_contact(self):
         actions = self.browser.find_element(By.XPATH, "//tr[@role='row'][1]//td[contains(@class, 'actions')]")
         actions.find_element(By.XPATH, ".//a[contains(@class, 'btn-danger')]").click()
 

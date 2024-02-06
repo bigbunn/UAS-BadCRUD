@@ -20,7 +20,7 @@ class LogoutTestCase(unittest.TestCase):
             self.url = "http://localhost"
 
 
-    def test_1_login(self):
+    def test_logout(self):
         expected_result = "Halo, admin"
         self.browser.get(self.url + '/login.php')
         self.browser.find_element(By.NAME, "username").send_keys("admin")
@@ -29,7 +29,7 @@ class LogoutTestCase(unittest.TestCase):
         actual_result = self.browser.find_element(By.XPATH, "/html/body/div[1]/h2").text  
         self.assertIn(expected_result, actual_result)
 
-    def test_2_logout(self):
+    # def test_2_logout(self):
         self.browser.find_element(By.XPATH, "//a[contains(text(),'Sign out')]").click()
 
         expected_result = "Login"
