@@ -29,7 +29,7 @@ class ProfilePictureUploadTestCase(unittest.TestCase):
         self.assertIn(expected_result, actual_result)
 
     # def test_2_profile_page(self):
-        expected_result = "Profile"
+        expected_result = "Profil"
         self.browser.get(self.url + '/profil.php')
         actual_result = self.browser.title
         self.assertIn(expected_result,actual_result)
