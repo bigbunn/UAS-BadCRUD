@@ -29,17 +29,29 @@ jobs:
       - name: Check AUT URL
         run: curl ${{ env.URL }}
 
+    # - name: Context Setup
+    #     env:
+    #       # Set a previously defined secret as an environment variable for this step:
+    #       B64PASSWORD: ${{secrets.B64PASSWORD}}
+    #     # Replace the "PLACEHOLDER" string in the context file with the real base64-encoded password:
+    #     run: |
+    #       sed -ie "s/PLACEHOLDER/${B64PASSWORD}/" $GITHUB_WORKSPACE/ctx_file.context
+
       - name: ZAP scan
         uses: hermanka/action-full-scan@master
         with:
           target : ${{ env.URL}}
           network_name: isolated
-          auth_info: 'admin:nimda666!@${{ env.URL}}/login'
-  
-          scan_type: 'full'
-          zap_options: '-config replacer.full_list\(0\).description=auth1 -config replacer.full_list\(0\).enabled=true -config replacer.full_list\(0\).matchtype=REQ_HEADER -config replacer.full_list\(0\).matchstr=Authorization -config replacer.full_list\(0\).regex=false -config replacer.full_list\(0\).replacement=ZAP'
-          issue_title: '[ZAP Scan] Vulnerabilities found in web application'
-      
+          token : ${{ secrets.GITHUB_TOKEN }}
+          cmd_options: |
+            -z "auth.loginurl=${{env.URL}/login"
+            auth.username='admin' 
+            auth.password='nimda666!'
+            auth.username_field=username 
+            auth.password_field=password 
+            auth.submit_field=submit 
+            auth.include='${{ env.URL }}/*' 
+            auth.exclude='.*logout.*,${{ env.URL }}/logout.php
       - name: stop docker
         run: docker stop docker-apache
   
