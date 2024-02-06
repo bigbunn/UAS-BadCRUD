@@ -5,7 +5,7 @@ on:
       - main
 jobs:
   dast:
-    name: DAST
+    name: DAST with ZAP
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
@@ -29,13 +29,12 @@ jobs:
       - name: Check AUT URL
         run: curl ${{ env.URL }}
 
-    # - name: Context Setup
-    #     env:
-    #       # Set a previously defined secret as an environment variable for this step:
-    #       B64PASSWORD: ${{secrets.B64PASSWORD}}
-    #     # Replace the "PLACEHOLDER" string in the context file with the real base64-encoded password:
-    #     run: |
-    #       sed -ie "s/PLACEHOLDER/${B64PASSWORD}/" $GITHUB_WORKSPACE/ctx_file.context
+      - name: CURL to follow redirection
+        id: target_url  ## in my case : target has SAML service for auth, thus the login url is on difference page
+        run: |
+          LOGINURL=`curl -vkL -o /dev/null -w %{url_effective} ${{ env.URL }}`
+          echo $LOGINURL
+          echo "::set-output name=LOGINURL::$LOGINURL"
 
       - name: ZAP scan
         uses: hermanka/action-full-scan@master
@@ -52,9 +51,9 @@ jobs:
             auth.submit_field=submit 
             auth.include='${{ env.URL }}/*' 
             auth.exclude='.*logout.*,${{ env.URL }}/logout.php
+          
       - name: stop docker
         run: docker stop docker-apache
-  
   sast:
     name: Psalm
     permissions: write-all
